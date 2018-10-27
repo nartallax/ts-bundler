@@ -1,0 +1,10 @@
+{
+  "name": "ts_bundler",
+  "version": "1.0.0",
+  "description": "A tool to pack typescript projects into nice js bundles.",
+  "main": "main.js",
+  "author": "Nartallax",
+  "dependencies": {
+    "typescript": "^3.0.3"
+  }
+}
