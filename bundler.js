@@ -45,7 +45,18 @@ module.exports.getBundleCode = async (opts) => {
 		evalCode,
 		JSON.stringify(opts.entryPoint),
 		JSON.stringify(opts.entryPointFunction)
-	].join(",") + ")";
+	].join(",")
+	
+	switch(opts.environment || "browser"){
+		case "browser":
+			let waitLoadedCode = await fs.readFile(path.resolve(__dirname, "./client_code/eval.js"));
+			resultCode += ", " + waitLoadedCode + ")";
+			break;
+		case "node":
+			resultCode += ", null)"
+			break;
+		default: throw new Error("Unknown environment: \"" + opts.environment + "\"");
+	}
 	
 	return resultCode;
 }

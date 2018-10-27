@@ -1,4 +1,4 @@
-(function(packageCode, modname, runEval, entryPoint, entryFunction){
+(function(packageCode, modname, runEval, entryPoint, entryFunction, waitLoad){
 	var knownPackages = {
 		require: function(name){
 			throw new Error("Direct usage of require() is explicitly forbidden.");
@@ -33,30 +33,6 @@
 		knownPackages[entryPoint][entryFunction]();
 	}
 	
-	var waitLoad = function(cb){
-		var interval = null;
-		var loaded = false;
-		
-		var wcb = function(){
-			if(loaded)
-				return;
-			loaded = true;
-			if(interval)
-				clearInterval(interval);
-			cb();
-		}
-		
-		var checkState = function(){
-			if(document && (document.readyState === "interactive" || document.readyState === "complete"))
-				wcb();
-		}
-		
-		window.addEventListener("load", wcb);
-		document.addEventListener("load", wcb);
-		document.addEventListener("readystatechange", checkState);
-		interval = setInterval(checkState, 10);
-		checkState();
-	}
-	
+	waitLoad = waitLoad || function(cb){ cb() };
 	waitLoad(run);
 })

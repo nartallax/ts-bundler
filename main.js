@@ -2,12 +2,13 @@
 let path = require("path");
 let getBundleCode = require("./bundler").getBundleCode
 
-let { cliArg, cliArgBool} = require("./cli_arg");
+let { cliArg, cliArgBool, cliArgOrDefault } = require("./cli_arg");
 
 let tsConfigPath = path.resolve(process.cwd(), cliArg("--tsconfig"));
 let entryPoint = cliArg("--entry-point");
 let entryPointFunctionName = cliArg("--entry-point-function");
 let fancy = cliArgBool("--fancy");
+let environment = cliArgOrDefault(null, "--environment");
 
 (async () => {
 	try {
@@ -16,7 +17,8 @@ let fancy = cliArgBool("--fancy");
 			fancy: fancy,
 			entryPoint: entryPoint,
 			entryPointFunction: entryPointFunctionName,
-			tsConfigPath: tsConfigPath
+			tsConfigPath: tsConfigPath,
+			environment: environment
 		});
 		
 		console.log(bundleCode);
