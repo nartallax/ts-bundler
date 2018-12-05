@@ -49,7 +49,7 @@ module.exports.getBundleCode = async (opts) => {
 	
 	switch(opts.environment || "browser"){
 		case "browser":
-			let waitLoadedCode = await fs.readFile(path.resolve(__dirname, "./client_code/eval.js"));
+			let waitLoadedCode = await fs.readFile(path.resolve(__dirname, "./client_code/browser_waitload.js"));
 			resultCode += ", " + waitLoadedCode + ")";
 			break;
 		case "node":
