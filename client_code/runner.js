@@ -1,4 +1,4 @@
-(function(packageCode, modname, runEval, entryPoint, entryFunction, waitLoad){
+(function(packageCode, modname, runEval, entryPoint, entryFunction, waitLoad, onPackageNotFound){
 	var knownPackages = {
 		require: function(name){
 			throw new Error("Direct usage of require() is explicitly forbidden.");
@@ -14,7 +14,7 @@
 			if(r === "exports")
 				pkgs.push(result = {});
 			else if(!(r in knownPackages))
-				throw new Error("Package is not defined by the time it is requested: \"" + r + "\".");
+				pkgs.push(onPackageNotFound(r))
 			else
 				pkgs.push(knownPackages[r]);
 		}

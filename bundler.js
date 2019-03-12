@@ -18,11 +18,15 @@ module.exports.getBundleCode = async (opts) => {
 	
 	let paths = await discoverPackages(opts.tsConfigPath);
 	let deps = await (new DependencyTraverser(paths).getFullDependencyList(opts.entryPoint));
-	let content = await Promise.all(deps.map(async x => {
-		if(!(x in paths))
-			fail("Dependency not found: " + x);
+	let content = (await Promise.all(deps.map(async x => {
+		if(!(x in paths)){
+			// do nothing. this should be reported at traversing time
+			//fail("Dependency not found: " + x);
+			return null;
+		}
+			
 		return [x, await fs.readFile(paths[x])]
-	}));
+	}))).filter(x => !!x);
 	
 	let commons = {};
 	content.forEach(x => {
@@ -48,13 +52,17 @@ module.exports.getBundleCode = async (opts) => {
 	].join(",")
 	
 	switch(opts.environment || "browser"){
-		case "browser":
-			let waitLoadedCode = await fs.readFile(path.resolve(__dirname, "./client_code/eval.js"));
-			resultCode += ", " + waitLoadedCode + ")";
+		case "browser": {
+			let waitLoadedCode = await fs.readFile(path.resolve(__dirname, "./client_code/browser_waitload.js"));
+			let onPackageNotFoundCode = await fs.readFile(path.resolve(__dirname, "./client_code/browser_onpackagenotfound.js"));
+			resultCode += ", " + waitLoadedCode + "," + onPackageNotFoundCode + ")";
 			break;
-		case "node":
-			resultCode += ", null)"
+		}
+		case "node": {
+			let onPackageNotFoundCode = await fs.readFile(path.resolve(__dirname, "./client_code/node_onpackagenotfound.js"));
+			resultCode += ", null, " + onPackageNotFoundCode + ")"
 			break;
+		}
 		default: throw new Error("Unknown environment: \"" + opts.environment + "\"");
 	}
 	

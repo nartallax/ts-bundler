@@ -40,7 +40,7 @@ class Reorderer {
 	
 	reorder(deps){
 		deps = deps.map(x => [x, this.calculateIndex(x)])
-		deps = deps.sort((a, b) => a[1] - b[1])
+		deps = deps.sort((a, b) => a[1] !== b[1]? a[1] - b[1]: a[0] > b[0]? 1: a[0] < b[0]? -1: 0);
 		return deps.map(x => x[0]);
 	}
 }
@@ -65,13 +65,14 @@ class DependencyTraverser {
 		let ok, bad;
 		this.immediateWaiters[name] = (new Promise((_ok, _bad) => { ok = _ok, bad = _bad }))
 		
-		if(!(name in this.paths))
-			fail("Unknown module name: " + name); // not really gonna happen; tsc will check for these
-		
-		let deps = await this.forceGetImmediateDependencies(name);
-		
-		this.knownDependencies[name] = deps;
-		delete this.immediateWaiters[name];
+		let deps = [];
+		if(!(name in this.paths)){
+			console.warn("Assuming module \"" + name + "\" to be provided.")
+		} else {
+			deps = await this.forceGetImmediateDependencies(name);		
+			this.knownDependencies[name] = deps;
+			delete this.immediateWaiters[name];
+		}
 		ok();
 		
 		return deps;
