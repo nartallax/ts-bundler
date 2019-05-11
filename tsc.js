@@ -13,7 +13,7 @@ let findNpmRoot = async () => {
 
 let resolvedExecutables = new Map();
 
-let findTscExecutable = async tsconfigPath => {
+let findTscExecutable = async (tsconfigPath, silent) => {
 	tsconfigPath = path.normalize(tsconfigPath);
 	if(!resolvedExecutables.has(tsconfigPath)){
 		let tscExecPaths = [];
@@ -50,7 +50,7 @@ let findTscExecutable = async tsconfigPath => {
 		
 		tscExecutable || fail("TSC is not installed. Expected tsc executable to be at one of paths: \n\t" + tscExecPaths.join("\n\t"));
 		
-		console.error("Using tsc in " + tscExecutable + " for " + tsconfigPath);
+		silent || console.error("Using tsc in " + tscExecutable + " for " + tsconfigPath);
 		
 		resolvedExecutables.set(tsconfigPath, tscExecutable);
 	}
@@ -59,7 +59,7 @@ let findTscExecutable = async tsconfigPath => {
 }
 
 module.exports = {
-	run: async (tsconfigPath, opts) => {
+	run: async (tsconfigPath, opts, silent) => {
 		let optStr = [];
 		Object.keys(opts).forEach(name => {
 			optStr.push((name.length === 1? "-": "--") + name);
@@ -67,7 +67,7 @@ module.exports = {
 		});
 		optStr = optStr.join(" ");
 		
-		let tscPath = await findTscExecutable(tsconfigPath);
+		let tscPath = await findTscExecutable(tsconfigPath, silent);
 		tscPath = path.relative(process.cwd(), tscPath);
 		try {
 			//let execRes = await shellExecuteFile(path.relative(process.cwd(), tscPath), optStr);

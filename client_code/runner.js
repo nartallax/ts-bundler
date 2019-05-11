@@ -1,7 +1,7 @@
 (function(packageCode, modname, runEval, entryPoint, entryFunction, waitLoad, onPackageNotFound){
 	var knownPackages = {
 		require: function(name){
-			throw new Error("Direct usage of require() is explicitly forbidden.");
+			return onPackageNotFound(name);
 		}
 	}
 
