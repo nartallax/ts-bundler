@@ -27,7 +27,15 @@
 			var pkgName = packageCode[i][0];
 			var pkgCode = packageCode[i][1] + "\n//# sourceURL=" + pkgName;
 			currentPackage = pkgName;
-			runEval(pkgCode, define);
+			try {
+				runEval(pkgCode, define);
+			} catch(e){
+				if(typeof(packageEvalExceptionHandler) !== "undefined"){
+					packageEvalExceptionHandler(e, pkgName);
+				}
+				throw e;
+			}
+			
 			currentPackage = null;
 		}
 		knownPackages[entryPoint][entryFunction]();

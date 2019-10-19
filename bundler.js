@@ -13,8 +13,9 @@ let tsc = require("./tsc"),
 module.exports.getBundleCode = async (opts) => {
 	await tsc.run(opts.tsConfigPath, {
 		"project": `${JSON.stringify(opts.tsConfigPath)}`,
-		"target": opts.fancy? "es2018": "es3",
-	}, !!opts.silent);
+		"target": opts.fancy? "es2018": "es5",
+		"incremental": !!opts.incremental
+	}, opts.silent);
 	
 	let paths = await discoverPackages(opts.tsConfigPath);
 	let deps = await (new DependencyTraverser(paths).getFullDependencyList(opts.entryPoint));

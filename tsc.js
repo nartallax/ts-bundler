@@ -62,8 +62,12 @@ module.exports = {
 	run: async (tsconfigPath, opts, silent) => {
 		let optStr = [];
 		Object.keys(opts).forEach(name => {
+			let v = opts[name];
+			if(v === false)
+				return;
 			optStr.push((name.length === 1? "-": "--") + name);
-			optStr.push(opts[name]);
+			if(v !== true)
+				optStr.push(v);
 		});
 		optStr = optStr.join(" ");
 		

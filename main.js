@@ -10,6 +10,7 @@ let entryPointFunctionName = cliArg("--entry-point-function");
 let fancy = cliArgBool("--fancy");
 let environment = cliArgOrDefault(null, "--environment");
 let silent = cliArgBool("--silent");
+let incremental = cliArgBool("--incremental");
 
 (async () => {
 	try {
@@ -20,7 +21,8 @@ let silent = cliArgBool("--silent");
 			entryPointFunction: entryPointFunctionName,
 			tsConfigPath: tsConfigPath,
 			environment: environment,
-			silent: silent
+			silent: silent,
+			incremental: incremental
 		});
 		
 		console.log(bundleCode);
